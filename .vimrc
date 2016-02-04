@@ -141,11 +141,18 @@
 
     " Valloric/YouCompleteMe {
       let g:ycm_path_to_python_interpreter='/usr/bin/python'
+      " By default YCM runs jedi with the same python interpreter used
+      " by [ycmd], so if you would like to use a different interpreter,
+      " use the following option specifying the python binary to use.
+      let g:ycm_python_binary_path = '/usr/bin/python3'
+
       "let g:ycm_server_use_stdout=0
       "let g:ycm_server_keep_logfiles=1
       "let g:ycm_server_log_level='debug'
       let g:ycm_autoclose_preview_window_after_completion=1
       map <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
+      map <leader>d :YcmCompleter GetDoc<CR>
+      " hint: to close preview window ':pc'
     " }
 
     " scrooloose/nerdtree {
