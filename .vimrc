@@ -140,6 +140,11 @@
     " }
 
     " Valloric/YouCompleteMe {
+      " Remember: YCM is a plugin with a compiled component. If you update YCM
+      " using Vundle and the ycm_core library APIs have changed (happens rarely),
+      " YCM will notify you to recompile it. You should then rerun the install
+      " process. To rerun the install please follow the documentation.
+      "
       let g:ycm_path_to_python_interpreter='/usr/bin/python'
       " By default YCM runs jedi with the same python interpreter used
       " by [ycmd], so if you would like to use a different interpreter,
@@ -170,6 +175,8 @@
   " Language {
 
     " Python {
+      " By default configuration supports VIM being built with +python3 support.
+      "
       let python_highlight_all=1
       " Add the proper PEP8 indentation, add the following.
       au BufNewFile,BufRead *.py 
@@ -186,7 +193,7 @@
       au BufNewFile,BufRead *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
       " Python with VirtualEnv support
-      py << EOF
+      py3 << EOF
 import os
 import sys
 if 'VIRTUAL_ENV' in os.environ:
