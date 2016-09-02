@@ -19,6 +19,11 @@
   "
   " 3. Now set up Vundle in your .vimrc by adding the following to the .vimrc
   " file. 
+  "
+  " 4. Install Plugins:
+  "   Lauch `vim` and run `:PluginInstall`.
+  "
+  "   To install from command line excute `vim +PluginInstall +qall`.
 " }
 
 " Vundle Configuration {
@@ -128,8 +133,8 @@
             set background=light
             colorscheme solarized
         else 
-            "set background=light
-            set background=dark
+            set background=light
+            "set background=dark
             colorscheme solarized
         endif
     " }
