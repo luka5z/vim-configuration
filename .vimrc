@@ -92,12 +92,16 @@
     set number
     " Syntax highlighting.
     syntax on
+    " Enable visual wrapping
+    set wrap
+    " Turns off physical line wrapping
+    set textwidth=0
+    set wrapmargin=0
 
     au BufNewFile,BufRead * 
         \ set tabstop=2 |
         \ set softtabstop=2 |
         \ set shiftwidth=2 | 
-        \ set textwidth=79 |
         \ set expandtab | 
         \ set autoindent | 
         \ set fileformat=unix
@@ -110,12 +114,15 @@
     set splitbelow
     set splitright
 
-    " Jump between splits with just one key combination
-    " (remap key combinations in normal mode).
+    " Jump between splits with just one key combination.
+    " Use different key mappings for easy navigation between splits to
+    " save a keystroke. 
+    "
+    " Instead of ctrl-w then j, it’s just ctrl-j:
     nnoremap <C-J> <C-W><C-J>
-    nnoremap <C-W> <C-W><C-W>
-    nnoremap <C-H> <C-W><C-H>
+    nnoremap <C-K> <C-W><C-K>
     nnoremap <C-L> <C-W><C-L>
+    nnoremap <C-H> <C-W><C-H>
 
     " Enable code folding.
     set foldmethod=indent
@@ -150,11 +157,24 @@
       " YCM will notify you to recompile it. You should then rerun the install
       " process. To rerun the install please follow the documentation.
       "
-      let g:ycm_path_to_python_interpreter='/usr/bin/python'
+      " Compiling YCM without semantic support for C-family languages:
+      "
+      "   apt-get install -y build-essential cmake python-dev python3-dev
+      "   cd ~/.vim/bundle/YouCompleteMe
+      "   ./install.py
+      "
+      " For more details follow official documentation.
+
       " By default YCM runs jedi with the same python interpreter used
       " by [ycmd], so if you would like to use a different interpreter,
       " use the following option specifying the python binary to use.
-      let g:ycm_python_binary_path = '/usr/bin/python3'
+      if has("python3")
+        let g:ycm_path_to_python_interpreter='/usr/bin/python'
+        let g:ycm_python_binary_path = '/usr/bin/python'
+      else
+        let g:ycm_path_to_python_interpreter='/usr/bin/python3'
+        let g:ycm_python_binary_path = '/usr/bin/python3'
+      endif
 
       "let g:ycm_server_use_stdout=0
       "let g:ycm_server_keep_logfiles=1
@@ -178,6 +198,12 @@
   " }
 
   " Language {
+    " Shell {
+      au BufNewFile,BufRead *.sh 
+          \ set tabstop=4 |
+          \ set softtabstop=4 |
+          \ set shiftwidth=4 
+    " }
 
     " Python {
       " By default configuration supports VIM being built with +python3 support.
@@ -187,29 +213,42 @@
       au BufNewFile,BufRead *.py 
           \ set tabstop=4 |
           \ set softtabstop=4 |
-          \ set shiftwidth=4 | 
-          \ set textwidth=79 |
-          \ set expandtab | 
-          \ set autoindent | 
-          \ set fileformat=unix
+          \ set shiftwidth=4 
 
       " Mark extraneous whitespace.
       highlight BadWhitespace ctermbg=red guibg=red
       au BufNewFile,BufRead *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
+      " Compatible way to use either :py or :py3.
+      if has("python3")
+        command! -nargs=1 Py py3 <args>
+      else
+        command! -nargs=1 Py py3 <args>
+      endif
+
       " Python with VirtualEnv support
-      py3 << EOF
+      Py << EOF
 import os
 import sys
 if 'VIRTUAL_ENV' in os.environ:
     project_base_dir = os.environ['VIRTUAL_ENV']
     activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
-    execfile(activate_this, dict(__file__=activate_this))
+    # For python2:
+    #execfile(activate_this, dict(__file__=activate_this))
+    # For python3:
+    exec(compile(open(activate_this, "rb").read(), activate_this, 'exec'), dict(__file__=activate_this))
 EOF
+    " }
+    
+    " Java, Groovy {
+      au BufNewFile,BufRead *.java,*.groovy
+          \ set tabstop=4 |
+          \ set softtabstop=4 |
+          \ set shiftwidth=4 
     " }
 
     " Full Stack Development (js, html, css) {
-      au BufNewFile,BufRead *.js, *.html, *.css
+      au BufNewFile,BufRead *.js,*.html,*.css
           \ set tabstop=2 |
           \ set softtabstop=2 |
           \ set shiftwidth=2
