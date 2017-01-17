@@ -98,13 +98,25 @@
     set textwidth=0
     set wrapmargin=0
 
+    " Shows invisible characters using unicode characters.
+    set nolist
+    set listchars=space:·,tab:»\ ,eol:¬
+    " Toggles between showing/hiding invisible characters.
+    nnoremap <leader>l :set list!<CR> 
+
+
+    " Makes settings conditional on 'modifiable' buffer.
+    " Prevents E21 error while ediditing no modifiable buffers,
+    " like vim help pages.
     au BufNewFile,BufRead * 
+        \ if &l:modifiable |
         \ set tabstop=2 |
         \ set softtabstop=2 |
         \ set shiftwidth=2 | 
         \ set expandtab | 
         \ set autoindent | 
-        \ set fileformat=unix
+        \ set fileformat=unix |
+        \ endif
 
 
     " Change leader key mapping to comma character.
@@ -130,20 +142,27 @@
 
     " Enable folding with the spacebar.
     nnoremap <space> za
+
+    " Show commands as they are being typed (bottom-right)
+    set showcmd
   " }
 
     
   " Plugins {
 
     " altercation/vim-colors-solarized {
+        " Sets 256 colors as a based for Solarized theme, 
+        " and helps override terminal settings. Sometimes
+        " if terminal has Solarized theme, Vim's colors get
+        " inverted.
+        let g:solarized_termcolors=256
+        set t_Co=256
         if has('gui_running')
             set background=light
-            colorscheme solarized
         else 
             set background=light
-            "set background=dark
-            colorscheme solarized
         endif
+        colorscheme solarized
     " }
 
     " tmhedberg/SimpylFold {
