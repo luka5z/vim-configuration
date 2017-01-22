@@ -59,6 +59,8 @@
     Plugin 'scrooloose/syntastic'
     " PEP8 checking.
     "Plugin 'nvie/vim-flake8'
+    " Syntax file for the Groovy programming language.
+    Plugin 'vim-scripts/groovy.vim'
 
     " Color schemes.
     " Currently set through a Terminal's preferences.
@@ -169,11 +171,11 @@
       " by [ycmd], so if you would like to use a different interpreter,
       " use the following option specifying the python binary to use.
       if has("python3")
-        let g:ycm_path_to_python_interpreter='/usr/bin/python'
-        let g:ycm_python_binary_path = '/usr/bin/python'
-      else
         let g:ycm_path_to_python_interpreter='/usr/bin/python3'
         let g:ycm_python_binary_path = '/usr/bin/python3'
+      else
+        let g:ycm_path_to_python_interpreter='/usr/bin/python'
+        let g:ycm_python_binary_path = '/usr/bin/python'
       endif
 
       "let g:ycm_server_use_stdout=0
@@ -223,7 +225,7 @@
       if has("python3")
         command! -nargs=1 Py py3 <args>
       else
-        command! -nargs=1 Py py3 <args>
+        command! -nargs=1 Py py <args>
       endif
 
       " Python with VirtualEnv support
@@ -239,12 +241,19 @@ if 'VIRTUAL_ENV' in os.environ:
     exec(compile(open(activate_this, "rb").read(), activate_this, 'exec'), dict(__file__=activate_this))
 EOF
     " }
-    
-    " Java, Groovy {
-      au BufNewFile,BufRead *.java,*.groovy
+    " XML
+      au BufNewFile,BufRead *.xml
           \ set tabstop=4 |
           \ set softtabstop=4 |
           \ set shiftwidth=4 
+    
+    " Java, Groovy {
+      au BufNewFile,BufRead *.java,*.groovy,Jenkinsfile
+          \ set tabstop=4 |
+          \ set softtabstop=4 |
+          \ set shiftwidth=4 
+      au BufNewFile,BufRead *.groovy,Jenkinsfile
+          \ setf groovy
     " }
 
     " Full Stack Development (js, html, css) {
