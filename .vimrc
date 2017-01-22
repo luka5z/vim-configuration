@@ -1,4 +1,4 @@
-:" VIM Configuration
+" VIM Configuration
 "
 " Vundle Installation Steps { VIM has several extension managers, but the one
 " which is strongly recommend is Vundle. Think of it as pip for VIM. It makes
@@ -179,6 +179,20 @@
     " Show commands as they are being typed (bottom-right)
     set showcmd
 
+    " Ctrl-S, saves current buffer.
+    "
+    " If the current buffer has never been saved, it will have no name,
+    " call the file browser to save it, otherwise just save it.
+    command -nargs=0 -bar Update 
+          \if &modified |
+          \    if empty(bufname('%')) |
+          \        browse confirm write |
+          \    else |
+          \        confirm write |
+          \    endif |
+          \endif
+    nnoremap <silent> <C-S> :<C-u>Update<CR>
+
     " Spell checking
     "
     " Default language:
@@ -186,7 +200,7 @@
 
     function! EnableSpellChecking(lang)
       let b:chosenLang=a:lang
-      execute "normal! :setlocal spell spelllang=".a:lang
+      execute "setlocal spell spelllang=".a:lang
       redraw!
       echo "Spell checking enabled for ".a:lang." language."
     endfunction
