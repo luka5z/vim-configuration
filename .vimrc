@@ -1,30 +1,28 @@
-" VIM Configuration
+:" VIM Configuration
 "
-" Vundle Installation Steps {
-  " VIM has several extension managers, but the one which is strongly recommend is
-  " Vundle. Think of it as pip for VIM. It makes installing and updating packages
-  " trivial.
-  "
-  " 1. Get Vundle installed:
-  "
-  "   $ git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-  "
-  " This command downloads the Vundle plugin manager and chucks it in your VIM
-  " bundles directory. Now you can manage all your extensions from the .vimrc
-  " configuration file.
-  "
-  " 2. Add the file to your user’s home directory:
-  "
-  "   $ touch ~/.vimrc
-  "
-  " 3. Now set up Vundle in your .vimrc by adding the following to the .vimrc
-  " file. 
-  "
-  " 4. Install Plugins:
-  "   Lauch `vim` and run `:PluginInstall`.
-  "
-  "   To install from command line excute `vim +PluginInstall +qall`.
-" }
+" Vundle Installation Steps { VIM has several extension managers, but the one
+" which is strongly recommend is Vundle. Think of it as pip for VIM. It makes
+" installing and updating packages trivial.
+"
+" 1. Get Vundle installed:
+"
+"   $ git clone https://github.com/gmarik/Vundle.vim.git
+"   ~/.vim/bundle/Vundle.vim
+"
+" This command downloads the Vundle plugin manager and chucks it in your VIM
+" bundles directory. Now you can manage all your extensions from the .vimrc
+" configuration file.
+"
+" 2. Add the file to your user’s home directory:
+"
+"   $ touch ~/.vimrc
+"
+" 3. Now set up Vundle in your .vimrc by adding the following to the .vimrc
+" file. 
+"
+" 4. Install Plugins: Lauch `vim` and run `:PluginInstall`.
+"
+"   To install from command line excute `vim +PluginInstall +qall`.  }
 
 " Vundle Configuration {
   set nocompatible " required
@@ -37,7 +35,7 @@
   set rtp+=~/.vim/bundle/Vundle.vim
 " }
 
-" Add Vundle Plugins { 
+" Add Vundle Plugins {
   call vundle#begin()
 
   " Let Vundle manage Vundle, required.
@@ -75,23 +73,39 @@
     " Git integration.
     Plugin 'tpope/vim-fugitive'
 
+    " Vim surround.
+    Plugin 'tpope/vim-surround'
+
     " Powerline is a status bar that display multiple usefull things.
     "  - read documentaion
     "  - install powerline-enabled fonts
     "  - setup configuration ~/.vim/bundle/powerline/config_files/config.json
     Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+
+    " HardMode is a plugin which disables arrow keys, hjkl, page up/down
+    " and other other keys which allow one to rely on character-wise
+    " navigation.
+    Plugin 'wikitopian/hardmode'
+
+    " Effortless integration between Tmux and Vim.
+    Plugin 'benmills/vimux'
   " }
 
   " All of your Plugins must be added before the following line.
   call vundle#end()         " required
   filetype plugin indent on " required
-" } 
+" }
 
 
 " Settings {
+  " Reset {
+   " Removes ALL autocommands for the current group.  
+    autocmd!
+  " }
 
   " Default {
-    set number
+    " Change leader key mapping to comma character.
+    let mapleader=","
     " Syntax highlighting.
     syntax on
     " Enable visual wrapping
@@ -99,18 +113,47 @@
     " Turns off physical line wrapping
     set textwidth=0
     set wrapmargin=0
+    " Shows different background colors past 80 and 132 characters.
+    let &colorcolumn="81,".join(range(133,999),",")
 
+    " Displays line numbers.
+    set number
+    " Relative line numbering (since 7.3)
+    set relativenumber
+    function! LineNumberToggle()
+      set relativenumber!
+    endfunc
+    nnoremap <leader>n :call LineNumberToggle()<CR>
+
+    " Shows invisible characters using unicode characters.
+    set nolist
+    set listchars=space:·,tab:»\ ,eol:¬
+    " Toggles between showing/hiding invisible characters.
+    nnoremap <leader>l :set list!<CR> 
+
+    " Sets search highlighting.
+    set hlsearch
+  nnoremap <leader>c :nohlsearch<CR>
+
+    " Sets Vim in Paste mode. This is useful if you want to avoid unexpected
+    " effects, usually when using terminal, when Vim cannot distinguish
+    " between test and pasted text.
+    set pastetoggle=<F10>
+    " Use \"+ for X11's clipboard, and \"* for PRIMARY (selection) clipboard.
+
+    " Makes settings conditional on 'modifiable' buffer.
+    " Prevents E21 error while editing no modifiable buffers,
+    " like vim help pages.
     au BufNewFile,BufRead * 
+        \ if &l:modifiable |
         \ set tabstop=2 |
         \ set softtabstop=2 |
         \ set shiftwidth=2 | 
         \ set expandtab | 
         \ set autoindent | 
-        \ set fileformat=unix
+        \ set fileformat=unix |
+        \ endif
 
-
-    " Change leader key mapping to comma character.
-    let mapleader=","
 
     " Specify areas of the screen where the splits should occur.
     set splitbelow
@@ -132,20 +175,81 @@
 
     " Enable folding with the spacebar.
     nnoremap <space> za
+
+    " Show commands as they are being typed (bottom-right)
+    set showcmd
+
+    " Spell checking
+    "
+    " Default language:
+    let g:defaultLang="en_us"
+
+    function! EnableSpellChecking(lang)
+      let b:chosenLang=a:lang
+      execute "normal! :setlocal spell spelllang=".a:lang
+      redraw!
+      echo "Spell checking enabled for ".a:lang." language."
+    endfunction
+
+    function! ToggleSpellChecking()
+      if !exists("b:chosenLang")
+        let b:chosenLang=""
+      endif
+
+      if empty(b:chosenLang)
+        call EnableSpellChecking(g:defaultLang)
+      else
+        let b:chosenLang=""
+        setlocal nospell
+        echo "Spell checking disabled."
+      endif
+    endfunction
+
+    " Toggles spell-checking with key.
+    noremap <leader>s :call ToggleSpellChecking()<CR>
+    " Automatically turns on spell-checking for Markdown files based on their
+    " extension.
+    autocmd BufRead,BufNewFile *.md 
+        \ call EnableSpellChecking(g:defaultLang)
+    " Automatically turns on spell-checking for Git commits.
+    autocmd FileType gitcommit 
+        \ call EnableSpellChecking(g:defaultLang)
+
+    " Increasing and decreasing numbers.
+    nnoremap <leader>add <C-a>
+    nnoremap <leader>sub <C-x>
+
+    " Experimental {
+      " Enable those options if you know what are you doing.
+
+      " Set working directory to the current file.
+      "
+      " Unfortunately, when this option is set some plugins may not work
+      " correctly if they make assumptions about the current directory.
+      " set autochdir
+      "
+      " The following command gives better results.
+      " autocmd BufEnter * silent! lcd %:p:h
+    " }
+    
   " }
 
     
   " Plugins {
 
     " altercation/vim-colors-solarized {
+        " Sets 256 colors as a based for Solarized theme, 
+        " and helps override terminal settings. Sometimes
+        " if terminal has Solarized theme, Vim's colors get
+        " inverted.
+        let g:solarized_termcolors=256
+        set t_Co=256
         if has('gui_running')
             set background=light
-            colorscheme solarized
         else 
             set background=light
-            "set background=dark
-            colorscheme solarized
         endif
+        colorscheme solarized
     " }
 
     " tmhedberg/SimpylFold {
@@ -196,6 +300,21 @@
     " Lokaltog/powerline {
       set laststatus=2
       set t_Co=256
+    " }
+
+    " wikitopian/hardmode {
+      autocmd VimEnter,BufNewFile,BufReadPost * silent! call HardMode()
+      nnoremap <leader>h <Esc>:call ToggleHardMode()<CR>
+    " }
+
+    " benmills/vimux {
+      nnoremap <leader>rc :VimuxPromptCommand<CR>
+      nnoremap <leader>rl :VimuxRunLastCommand<CR>
+      nnoremap <leader>ir :VimuxInspectRunner<CR>
+      nnoremap <leader>cr :VimuxCloseRunner<CR>
+      nnoremap <leader>tr :VimuxInterruptRunner<CR>
+      " Zooms the runner pane (use <Bind-Key> z to restore Vim's pane).
+      nnoremap <leader>zr :call VimuxZoomRunner()<CR>
     " }
   " }
 
