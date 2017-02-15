@@ -20,9 +20,11 @@
 " 3. Now set up Vundle in your .vimrc by adding the following to the .vimrc
 " file. 
 "
-" 4. Install Plugins: Lauch `vim` and run `:PluginInstall`.
+" 4. Install Plugins: Launch `vim` and run `:PluginInstall`.
 "
 "   To install from command line excute `vim +PluginInstall +qall`.  }
+"
+" 4a. Update Plugins: `:PluginInstall!` or just `:PluginUpdate`.
 
 " Vundle Configuration {
   set nocompatible " required
@@ -85,10 +87,10 @@
     " HardMode is a plugin which disables arrow keys, hjkl, page up/down
     " and other other keys which allow one to rely on character-wise
     " navigation.
-    Plugin 'wikitopian/hardmode'
+    "Plugin 'wikitopian/hardmode'
 
     " Effortless integration between Tmux and Vim.
-    Plugin 'benmills/vimux'
+    "Plugin 'benmills/vimux'
   " }
 
   " All of your Plugins must be added before the following line.
@@ -281,6 +283,10 @@
       "
       "   apt-get install -y build-essential cmake python-dev python3-dev
       "   cd ~/.vim/bundle/YouCompleteMe
+      "
+      "   # IMPORTANT!
+      "   # Use python according to installed Vim module (read below).
+      "   # ex. python3 install.py
       "   ./install.py
       "
       " For more details follow official documentation.
@@ -288,12 +294,16 @@
       " By default YCM runs jedi with the same python interpreter used
       " by [ycmd], so if you would like to use a different interpreter,
       " use the following option specifying the python binary to use.
+      "
+      " Type `:version` and check if Vim has been compiled with python or 
+      " python3 module. You can also type `:echo has('python')` or 
+      " `:echo has('python3')`.
+      let g:ycm_server_python_interpreter='python3'
+
       if has("python3")
-        let g:ycm_path_to_python_interpreter='/usr/bin/python3'
-        let g:ycm_python_binary_path = '/usr/bin/python3'
+        let g:ycm_python_binary_path = 'python3'
       else
-        let g:ycm_path_to_python_interpreter='/usr/bin/python'
-        let g:ycm_python_binary_path = '/usr/bin/python'
+        let g:ycm_python_binary_path = 'python'
       endif
 
       "let g:ycm_server_use_stdout=0
@@ -317,18 +327,18 @@
     " }
 
     " wikitopian/hardmode {
-      autocmd VimEnter,BufNewFile,BufReadPost * silent! call HardMode()
-      nnoremap <leader>h <Esc>:call ToggleHardMode()<CR>
+    "  autocmd VimEnter,BufNewFile,BufReadPost * silent! call HardMode()
+    "  nnoremap <leader>h <Esc>:call ToggleHardMode()<CR>
     " }
 
     " benmills/vimux {
-      nnoremap <leader>rc :VimuxPromptCommand<CR>
-      nnoremap <leader>rl :VimuxRunLastCommand<CR>
-      nnoremap <leader>ir :VimuxInspectRunner<CR>
-      nnoremap <leader>cr :VimuxCloseRunner<CR>
-      nnoremap <leader>tr :VimuxInterruptRunner<CR>
-      " Zooms the runner pane (use <Bind-Key> z to restore Vim's pane).
-      nnoremap <leader>zr :call VimuxZoomRunner()<CR>
+    "  nnoremap <leader>rc :VimuxPromptCommand<CR>
+    "  nnoremap <leader>rl :VimuxRunLastCommand<CR>
+    "  nnoremap <leader>ir :VimuxInspectRunner<CR>
+    "  nnoremap <leader>cr :VimuxCloseRunner<CR>
+    "  nnoremap <leader>tr :VimuxInterruptRunner<CR>
+    "  " Zooms the runner pane (use <Bind-Key> z to restore Vim's pane).
+    "  nnoremap <leader>zr :call VimuxZoomRunner()<CR>
     " }
   " }
 
