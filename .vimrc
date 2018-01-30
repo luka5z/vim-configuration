@@ -1,5 +1,9 @@
 " VIM Configuration
 "
+" Suggested VIM build flags:
+"   --with-clipboard
+"   --with-python3
+"
 " Vundle Installation Steps { VIM has several extension managers, but the one
 " which is strongly recommend is Vundle. Think of it as pip for VIM. It makes
 " installing and updating packages trivial.
@@ -142,15 +146,24 @@
     " between test and pasted text.
     set pastetoggle=<F10>
     " Use \"+ for X11's clipboard, and \"* for PRIMARY (selection) clipboard.
+    "
+    " A variant of the unnamed flag which uses the
+    " clipboard register '+' (|quoteplus|) instead of
+    " register '*' for all yank, delete, change and put
+    " operations which would normally go to the unnamed
+    " register.
+    "
+    " Cross-platform:
+    set clipboard^=unnamed,unnamedplus
 
     " Makes settings conditional on 'modifiable' buffer.
     " Prevents E21 error while editing no modifiable buffers,
     " like vim help pages.
     au BufNewFile,BufRead * 
         \ if &l:modifiable |
-        \ set tabstop=2 |
-        \ set softtabstop=2 |
-        \ set shiftwidth=2 | 
+        \ set tabstop=4 |
+        \ set softtabstop=4 |
+        \ set shiftwidth=4 | 
         \ set expandtab | 
         \ set autoindent | 
         \ set fileformat=unix |
@@ -182,6 +195,14 @@
     set showcmd
 
     " Ctrl-S, saves current buffer.
+    "
+    " You may notice that pressing Ctrl-S performs an 'XOFF' which stops
+    " commands from being received (If you are using ssh).
+    " 
+    " To fix that, place these two commands in your ~/.bash_profile:
+    "
+    "    bind -r '\C-s'
+    "    stty -ixon
     "
     " If the current buffer has never been saved, it will have no name,
     " call the file browser to save it, otherwise just save it.
@@ -320,9 +341,18 @@
       " `:echo has('python3')`.
       let g:ycm_server_python_interpreter='python3'
 
+      "if has("python3")
+      "  let g:ycm_path_to_python_interpreter='/usr/bin/python3'
+      "  let g:ycm_python_binary_path = '/usr/bin/python3'
+      "else
+      "  let g:ycm_path_to_python_interpreter='/usr/bin/python'
+      "  let g:ycm_python_binary_path = '/usr/bin/python'
+      "endif
       if has("python3")
+        let g:ycm_path_to_python_interpreter='python3'
         let g:ycm_python_binary_path = 'python3'
       else
+        let g:ycm_path_to_python_interpreter='python'
         let g:ycm_python_binary_path = 'python'
       endif
 
@@ -421,9 +451,9 @@ EOF
 
     " Full Stack Development (js, html, css) {
       au BufNewFile,BufRead *.js,*.html,*.css
-          \ set tabstop=2 |
-          \ set softtabstop=2 |
-          \ set shiftwidth=2
+          \ set tabstop=4 |
+          \ set softtabstop=4 |
+          \ set shiftwidth=4
     " }
   " }
 " }
